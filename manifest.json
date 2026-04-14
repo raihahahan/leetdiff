@@ -3,7 +3,15 @@
   "name": "LeetDiff",
   "version": "1.0.0",
   "description": "Hides difficulty labels on LeetCode so you can solve problems without bias.",
-  "permissions": [],
+  "permissions": ["storage"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon.png",
+      "48": "icon.png",
+      "128": "icon.png"
+    }
+  },
   "content_scripts": [
     {
       "matches": ["https://leetcode.com/*"],

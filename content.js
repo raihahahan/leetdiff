@@ -1,24 +1,34 @@
-// Selectors that match LeetCode difficulty labels (Easy / Medium / Hard)
 const DIFFICULTY_SELECTORS = [
-  // Problem list page
   'span[class*="difficulty"]',
   'div[class*="difficulty"]',
-  // Problem detail page
   'div[class*="Difficulty__"]',
   'div[class*="DifficultyLabel"]',
 ];
 
-function hideDifficulty() {
+function setVisibility(visible) {
   DIFFICULTY_SELECTORS.forEach((selector) => {
     document.querySelectorAll(selector).forEach((el) => {
-      el.style.visibility = "hidden";
+      el.style.visibility = visible ? "" : "hidden";
     });
   });
 }
 
-// Run once on load
-hideDifficulty();
+// Read initial state (default: enabled)
+chrome.storage.local.get({ enabled: true }, ({ enabled }) => {
+  setVisibility(!enabled);
+});
 
-// LeetCode is a SPA -- observe DOM mutations to catch dynamically rendered content
-const observer = new MutationObserver(hideDifficulty);
+// React to toggle changes without needing a page reload
+chrome.storage.onChanged.addListener((changes) => {
+  if (changes.enabled !== undefined) {
+    setVisibility(!changes.enabled.newValue);
+  }
+});
+
+// Watch for SPA navigation re-renders
+const observer = new MutationObserver(() => {
+  chrome.storage.local.get({ enabled: true }, ({ enabled }) => {
+    if (enabled) setVisibility(false);
+  });
+});
 observer.observe(document.body, { childList: true, subtree: true });
